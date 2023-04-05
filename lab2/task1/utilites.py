@@ -17,3 +17,12 @@ def amount_of_sentences(text):
     print(amount)
     return amount
 
+
+def amount_of_non_declarative_sentences(text):
+    reg = r"[?!]+"
+    sentences = re.findall(reg, text)
+
+    amount = len(sentences)
+
+    print(amount)
+    return amount
