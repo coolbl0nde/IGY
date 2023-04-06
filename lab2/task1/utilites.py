@@ -15,7 +15,6 @@ def amount_of_sentences(text):
             if sentence.strip() == abbreviation:
                 amount -= 1
 
-    print(amount)
     return amount
 
 
@@ -25,7 +24,6 @@ def amount_of_non_declarative_sentences(text):
 
     amount = len(sentences)
 
-    print(amount)
     return amount
 
 
@@ -39,7 +37,6 @@ def to_words(text):
     for sentence in sentences:
         words += re.findall(reg, sentence)
 
-    print(words)
     return words
 
 
