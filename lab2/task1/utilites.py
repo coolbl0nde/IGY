@@ -1,4 +1,5 @@
 import re
+from collections import Counter
 
 abbreviations = ["Mr.", "Mrs.", "Dr.", "etc."]
 
@@ -64,3 +65,14 @@ def words_length(text):
     characters = characters_in_text(text)
 
     return characters/amount
+
+
+def get_top_k_ngrams(text, k = 10, n = 4):
+    finished_text = re.sub(r'[^a-zA-Z0-9\s]', '', text.lower())
+
+    words = finished_text.split()
+    ngrams = [tuple(words[i:i + n]) for i in range(len(words) - n + 1)]
+    ngram_counts = Counter(ngrams)
+
+    return ngram_counts.most_common(k)
+
