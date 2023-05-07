@@ -1,5 +1,6 @@
 import re
 import inspect
+from constants import CODE_ATTRIBUTES
 
 
 class Serializer:
@@ -30,6 +31,10 @@ class Serializer:
 
             res["value"] = ser_object
 
+        elif inspect.isfunction(obj):
+            res["type"] = "function"
+            res["value"] = self.serialize_type_function(obj)
+
         elif not obj:
             res["type"] = "NoneType"
             res["value"] = "Null"
@@ -55,5 +60,26 @@ class Serializer:
                 fields[key] = self.serialize(value)
 
         res["__members__"] = fields
+
+        return res
+
+    def serialize_type_function(self, obj, class_object = None):
+
+        res = {}
+        arguments = {}
+
+        res["__name__"] = obj.__name__
+
+        if obj.__closure__:
+            res["__closure__"] = self.serialize(obj.__closure__)
+
+        else:
+            res["__closure__"] = self.serialize(tuple())
+
+        for (key, value) in inspect.getmembers(obj.__code__):
+            if key in CODE_ATTRIBUTES:
+                arguments[key] = self.serialize(value)
+
+        res["__code__"] = arguments
 
         return res
