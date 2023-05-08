@@ -204,6 +204,17 @@ class Deserializer:
         elif obj["type"] == "function":
             return self.deserialize_type_function(obj["value"])
 
+        elif obj["type"] == "class":
+            return self.deserialize_type_class(obj["value"])
+
+        elif obj["type"] == "staticmethod":
+            return staticmethod(self.deserialize(obj["value"]))
+
+        elif obj["type"] == "classmethod":
+            return classmethod(self.deserialize(obj["value"]))
+
+        elif obj["type"] == "object":
+            return self.deserialize_type_object(obj["value"])
 
     def deserialize_basic_types(self, type_obj, obj):
 
@@ -280,5 +291,18 @@ class Deserializer:
 
             elif isinstance(item, (staticmethod, classmethod)):
                 item.__func__.__globals__.update({res.__name__: res})
+
+        return res
+
+    def deserialize_type_object(self, obj):
+
+        cls = self.deserialize(obj["__class__"])
+        items = {}
+
+        for (key, value) in obj["__members__"].items():
+            items[key] = self.deserialize(value)
+
+        res = object.__new__(cls)
+        res.__dict__ = items
 
         return res
