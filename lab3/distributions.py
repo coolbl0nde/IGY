@@ -190,6 +190,8 @@ class Deserializer:
         if obj["type"] in BASIC_TYPES:
             return self.deserialize_basic_types(obj["type"], obj["value"])
 
+        elif obj["type"] in BASIC_COLLECTIONS:
+            return self.deserialize_basic_collections(obj["type"], obj["value"])
 
     def deserialize_basic_types(self, type_obj, obj):
 
@@ -204,3 +206,23 @@ class Deserializer:
 
         elif type_obj == "str":
             return str(obj)
+
+    def deserialize_basic_collections(self, type_obj, obj):
+
+        if type_obj == "tuple":
+            return tuple(obj)
+
+        elif type_obj == "list":
+            return list(obj)
+
+        elif type_obj == "set":
+            return set(obj)
+
+        elif type_obj == "frosenset":
+            return frozenset(obj)
+
+        elif type_obj == "bytearray":
+            return bytearray(obj)
+
+        elif type_obj == "bytes":
+            return bytes(obj)

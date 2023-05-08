@@ -5,4 +5,4 @@ OBJECT_ATTRIBUTES = ("__name__", "__base__", "__basicsize__", "__dictoffset__", 
 
 BASIC_TYPES = ("int", "float", "bool", "str")
 
-BASIC_COLLECTIONS = ("tuple", "list", "set", "frozenset", "bytearray", "bytes")
+BASIC_COLLECTIONS = ("tuple", "list", "set", "frozenset", "bytearray", "c")
