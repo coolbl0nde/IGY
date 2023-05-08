@@ -262,3 +262,23 @@ class Deserializer:
         res.__globals__.update({res.__name__:res})
 
         return res
+
+    def deserialize_type_class(self, obj):
+
+        bases = self.deserialize(obj["__bases__"])
+        items = {}
+
+        for item, value in obj.items():
+            items[item] = self.deserialize(value)
+
+        res = type(self.deserialize(obj["__name__"]), bases, items)
+
+        for item in items.values():
+
+            if inspect.isfunction(item):
+                item.__globals__.update({res.__name__: res})
+
+            elif isinstance(item, (staticmethod, classmethod)):
+                item.__func__.__globals__.update({res.__name__: res})
+
+        return res
