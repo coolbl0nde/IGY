@@ -15,7 +15,7 @@ class Serializer:
             res["type"] = self.get_type_of_obj(obj)
             res["value"] = obj
 
-        elif isinstance(obj, (tuple, list, set, frozenset, bytearray)):
+        elif isinstance(obj, (tuple, list, set, frozenset, bytearray, bytes)):
             res["type"] = self.get_type_of_obj(obj)
             ser_object = []
 
@@ -33,6 +33,10 @@ class Serializer:
 
             res["value"] = ser_object
 
+        elif isinstance(obj, types.CellType):
+            res["type"] = "cell"
+            res["value"] = self.serialize(obj.cell_contents)
+
         elif inspect.isfunction(obj):
             res["type"] = "function"
             res["value"] = self.serialize_type_function(obj)
@@ -40,6 +44,16 @@ class Serializer:
         elif inspect.isclass(obj):
             res["type"] = "class"
             res["value"] = self.serialize_type_class(obj)
+
+        elif inspect.iscode(obj):
+            res["type"] = "code"
+            args = dict()
+
+            for (key, value) in inspect.getmembers(obj):
+                if key in CODE_ATTRIBUTES:
+                    args[key] = self.serialize(value)
+
+            res["value"] = args
 
         elif not obj:
             res["type"] = "NoneType"
@@ -52,7 +66,7 @@ class Serializer:
         return res
 
     def get_type_of_obj(self, obj):
-        return re.search(r"\'(\w)+\'", str(type(obj)))[1]
+        return re.search(r"\'(\w+)\'", str(type(obj)))[1]
 
     def serialize_type_object(self, obj):
 
@@ -119,7 +133,7 @@ class Serializer:
         res = {}
         bases = []
 
-        for base in obj.__bases:
+        for base in obj.__bases__:
             if base != object:
                 bases.append(self.serialize(base))
 
@@ -130,7 +144,9 @@ class Serializer:
                 "value": bases
             }
 
-        for (key, value) in obj.__dict__:
+        for key in obj.__dict__:
+
+            value = obj.__dict__[key]
 
             if key in OBJECT_ATTRIBUTES or type(value) in (types.WrapperDescriptorType, types.MethodDescriptorType, types.BuiltinFunctionType,
                                                            types.GetSetDescriptorType, types.MappingProxyType):
@@ -153,7 +169,7 @@ class Serializer:
                     }
 
             elif inspect.ismethod(value):
-                res[key] = self.serialize(value.__func__, obj)
+                res[key] = self.serialize_type_function(value.__func__, obj)
 
             elif inspect.isfunction(value):
                 res[key] = \
