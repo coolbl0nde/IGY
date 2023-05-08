@@ -106,6 +106,7 @@ class Serializer:
         return res
 
     def get_globals(self, obj, class_object = None):
+
         res = {}
         globals = obj.__globals__
 
@@ -183,6 +184,7 @@ class Serializer:
 
         return res
 
+
 class Deserializer:
 
     def deserialize(self, obj):
@@ -192,6 +194,16 @@ class Deserializer:
 
         elif obj["type"] in BASIC_COLLECTIONS:
             return self.deserialize_basic_collections(obj["type"], obj["value"])
+
+        elif obj["type"] == "dict":
+            return dict(self.deserialize_basic_collections("list", obj["value"]))
+
+        elif obj["type"] == "cell":
+            return types.CellType(self.deserialize(obj["value"]))
+
+        elif obj["type"] == "function":
+            return self.deserialize_type_function(obj["value"])
+
 
     def deserialize_basic_types(self, type_obj, obj):
 
@@ -226,3 +238,27 @@ class Deserializer:
 
         elif type_obj == "bytes":
             return bytes(obj)
+
+    def deserialize_type_function(self, obj):
+
+        globals = obj["__globals__"]
+        closures = obj["__closure__"]
+        code = obj["__code__"]
+
+        obj_globals = {}
+
+        for key in obj_globals:
+
+            if "module" in key:
+                obj_globals[globals[key]["value"]] = __import__(globals[key]["value"])
+
+            elif globals[key] != obj["__name__"]:
+                obj_globals[key] = self.deserialize(globals[key])
+
+        closures = tuple(self.deserialize(closures))
+        code = types.CodeType(*tuple(self.deserialize(code[attribute] for attribute in CODE_ATTRIBUTES)))
+
+        res = types.FunctionType(code=code, globals=obj_globals, closure=closures)
+        res.__globals__.update({res.__name__:res})
+
+        return res
