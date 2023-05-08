@@ -1,6 +1,8 @@
 import re
 import inspect
-from constants import CODE_ATTRIBUTES
+import types
+
+from constants import CODE_ATTRIBUTES, OBJECT_ATTRIBUTES
 
 
 class Serializer:
@@ -35,6 +37,10 @@ class Serializer:
             res["type"] = "function"
             res["value"] = self.serialize_type_function(obj)
 
+        elif inspect.isclass(obj):
+            res["type"] = "class"
+            res["value"] = self.serialize_type_class(obj)
+
         elif not obj:
             res["type"] = "NoneType"
             res["value"] = "Null"
@@ -63,12 +69,13 @@ class Serializer:
 
         return res
 
-    def serialize_type_function(self, obj, class_object = None):
+    def serialize_type_function(self, obj, class_object=None):
 
         res = {}
         arguments = {}
 
         res["__name__"] = obj.__name__
+        res["__globals__"] = self.get_globals(obj, class_object)
 
         if obj.__closure__:
             res["__closure__"] = self.serialize(obj.__closure__)
@@ -81,5 +88,81 @@ class Serializer:
                 arguments[key] = self.serialize(value)
 
         res["__code__"] = arguments
+
+        return res
+
+    def get_globals(self, obj, class_object = None):
+        res = {}
+        globals = obj.__globals__
+
+        for value in obj.__code__.co_names:
+
+            if value in globals:
+
+                if inspect.isclass(globals[value]):
+                    if (class_object and obj.__globals__[value] != class_object) or not class_object:
+                        res[value] = self.serialize(globals[value])
+
+                elif isinstance(globals[value], types.ModuleType):
+                    res["module" + value] = self.serialize(globals[value].__name__)
+
+                elif value != obj.__code__.co_name:
+                    res[value] = self.serialize(globals[value])
+
+                else:
+                    res[value] = self.serialize(obj.__name__)
+
+        return res
+
+    def serialize_type_class(self, obj):
+
+        res = {}
+        bases = []
+
+        for base in obj.__bases:
+            if base != object:
+                bases.append(self.serialize(base))
+
+        res["__name__"] = self.serialize(obj.__name__)
+        res["__bases__"] = \
+            {
+                "type": "tuple",
+                "value": bases
+            }
+
+        for (key, value) in obj.__dict__:
+
+            if key in OBJECT_ATTRIBUTES or type(value) in (types.WrapperDescriptorType, types.MethodDescriptorType, types.BuiltinFunctionType,
+                                                           types.GetSetDescriptorType, types.MappingProxyType):
+                continue
+
+            elif isinstance(value, (staticmethod, classmethod)):
+
+                if isinstance(value, staticmethod):
+                    value_type = "staticmethod"
+                else:
+                    value_type = "classmethod"
+
+                res[key] = \
+                    {
+                        "type": value_type,
+                        "value": {
+                            "type": "function",
+                            "value": self.serialize_type_function(value.__func__, obj)
+                        }
+                    }
+
+            elif inspect.ismethod(value):
+                res[key] = self.serialize(value.__func__, obj)
+
+            elif inspect.isfunction(value):
+                res[key] = \
+                    {
+                        "type": "function",
+                        "value": self.serialize_type_function(value, obj)
+                    }
+
+            else:
+                res[key] = self.serialize(value)
 
         return res
