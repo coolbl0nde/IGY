@@ -2,7 +2,7 @@ import re
 import inspect
 import types
 
-from constants import CODE_ATTRIBUTES, OBJECT_ATTRIBUTES
+from constants import CODE_ATTRIBUTES, OBJECT_ATTRIBUTES, BASIC_TYPES, BASIC_COLLECTIONS
 
 
 class Serializer:
@@ -182,3 +182,25 @@ class Serializer:
                 res[key] = self.serialize(value)
 
         return res
+
+class Deserializer:
+
+    def deserialize(self, obj):
+
+        if obj["type"] in BASIC_TYPES:
+            return self.deserialize_basic_types(obj["type"], obj["value"])
+
+
+    def deserialize_basic_types(self, type_obj, obj):
+
+        if type_obj == "int":
+            return int(obj)
+
+        elif type_obj == "float":
+            return float(obj)
+
+        elif type_obj == "bool":
+            return bool(obj)
+
+        elif type_obj == "str":
+            return str(obj)

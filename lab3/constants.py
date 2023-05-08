@@ -2,3 +2,7 @@ CODE_ATTRIBUTES = ("co_argcount", "co_posonlyargcount", "co_kwonlyargcount", "co
                   "co_consts", "co_names", "co_varnames", "co_filename", "co_name", "co_firstlineno", "co_lnotab", "co_freevars", "co_cellvars")
 
 OBJECT_ATTRIBUTES = ("__name__", "__base__", "__basicsize__", "__dictoffset__", "__class__")
+
+BASIC_TYPES = ("int", "float", "bool", "str")
+
+BASIC_COLLECTIONS = ("tuple", "list", "set", "frozenset", "bytearray", "bytes")
