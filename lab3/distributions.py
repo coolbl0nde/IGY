@@ -260,12 +260,13 @@ class Deserializer:
     def deserialize_type_function(self, obj):
 
         globals = obj["__globals__"]
+
         closures = obj["__closure__"]
         code = obj["__code__"]
 
         obj_globals = {}
 
-        for key in obj_globals:
+        for key in globals:
 
             if "module" in key:
                 obj_globals[globals[key]["value"]] = __import__(globals[key]["value"])
