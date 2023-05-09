@@ -37,7 +37,7 @@ class JsonSerializer:
 
         res = regex.fullmatch(BOOL, value)
         if res:
-            return bool(res.group(0)) == "true"
+            return res.group(0) == "true"
 
         res = regex.fullmatch(NONE, value)
         if res:
