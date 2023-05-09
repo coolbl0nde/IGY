@@ -1,4 +1,7 @@
 from distributions import Serializer, Deserializer
+from constants import ELEMENT, REG_BASE_TYPES
+
+import regex
 
 
 class XMLSerializer:
@@ -27,8 +30,49 @@ class XMLSerializer:
         elif not value:
             return "<NoneType>None</NoneType>"
 
+    def find(self, value):
+
+        res = regex.fullmatch(ELEMENT, value)
+
+        if not res:
+            return
+
+        key = res.group("key")
+        val = res.group("value")
+
+        match key:
+
+            case "int":
+                return int(val)
+
+            case "float":
+                return float(val)
+
+            case "bool":
+                return bool(val)
+
+            case "str":
+                return value.replace("&quot;", '"').replace("&apos;", "'").replace("&lt", '<').replace("&gt", '>').replace("&amp", '&')
+
+            case "list":
+                res = regex.findall(ELEMENT, value)
+                return [self.find(match[0]) for match in res]
+
+            case "dict":
+                res = regex.findall(ELEMENT, value)
+                return {self.find(res[i][0]): self.find(res[i+1][0]) for i in range(0, len(res), 2)}
+
+            case "NoneType":
+                return None
+
     def dumps(self, obj):
         return self.convert(self.ser.serialize(obj))
 
     def dump(self, obj, f):
         f.write(self.dumps(obj))
+
+    def loads(self, value):
+        return self.des.deserialize(self.find(value))
+
+    def load(self, f):
+        return self.loads(f.read())
