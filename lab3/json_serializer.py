@@ -57,7 +57,7 @@ class JsonSerializer:
         if value[0] == "{" and value[-1] == "}":
             value = value[1:-1]
             res = regex.findall(VALUE, value)
-            return {self.find(res[i][0]): self.find(res[i+1][0] for i in range(0, len(res), 2))}
+            return {self.find(res[i][0]): self.find(res[i+1][0]) for i in range(0, len(res), 2)}
 
     def dumps(self, obj):
         return self.convert(self.ser.serialize(obj))
