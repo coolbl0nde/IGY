@@ -216,6 +216,13 @@ class Deserializer:
         elif obj["type"] == "object":
             return self.deserialize_type_object(obj["value"])
 
+        elif obj["type"] == "cell":
+            return types.CellType(self.deserialize(obj["value"]))
+
+        elif obj["type"] == "code":
+            code = obj["value"]
+            return types.CodeType(*tuple(self.deserialize(code[attribute]) for attribute in CODE_ATTRIBUTES))
+
     def deserialize_basic_types(self, type_obj, obj):
 
         if type_obj == "int":
