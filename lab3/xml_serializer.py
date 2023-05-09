@@ -1,5 +1,5 @@
 from distributions import Serializer, Deserializer
-from constants import ELEMENT, REG_BASE_TYPES
+from constants import ELEMENT
 
 import regex
 
@@ -49,18 +49,18 @@ class XMLSerializer:
                 return float(val)
 
             case "bool":
-                return bool(val)
+                return str(val) == "True"
 
             case "str":
-                return value.replace("&quot;", '"').replace("&apos;", "'").replace("&lt", '<').replace("&gt", '>').replace("&amp", '&')
+                return val.replace("&quot;", '"').replace("&apos;", "'").replace("&lt", '<').replace("&gt", '>').replace("&amp", '&')
 
             case "list":
-                res = regex.findall(ELEMENT, value)
+                res = regex.findall(ELEMENT, val)
                 return [self.find(match[0]) for match in res]
 
             case "dict":
-                res = regex.findall(ELEMENT, value)
-                return {self.find(res[i][0]): self.find(res[i+1][0]) for i in range(0, len(res), 2)}
+                res = regex.findall(ELEMENT, val)
+                return {self.find(res[i][0]): self.find(res[i + 1][0]) for i in range(0, len(res), 2)}
 
             case "NoneType":
                 return None
@@ -76,3 +76,4 @@ class XMLSerializer:
 
     def load(self, f):
         return self.loads(f.read())
+
