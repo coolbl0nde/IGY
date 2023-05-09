@@ -240,22 +240,22 @@ class Deserializer:
     def deserialize_basic_collections(self, type_obj, obj):
 
         if type_obj == "tuple":
-            return tuple(obj)
+            return tuple(self.deserialize(elem) for elem in obj)
 
         elif type_obj == "list":
-            return list(obj)
+            return list(self.deserialize(elem) for elem in obj)
 
         elif type_obj == "set":
-            return set(obj)
+            return set(self.deserialize(elem) for elem in obj)
 
         elif type_obj == "frosenset":
-            return frozenset(obj)
+            return frozenset(self.deserialize(elem) for elem in obj)
 
         elif type_obj == "bytearray":
-            return bytearray(obj)
+            return bytearray(self.deserialize(elem) for elem in obj)
 
         elif type_obj == "bytes":
-            return bytes(obj)
+            return bytes(self.deserialize(elem) for elem in obj)
 
     def deserialize_type_function(self, obj):
 
@@ -274,10 +274,11 @@ class Deserializer:
                 obj_globals[key] = self.deserialize(globals[key])
 
         closures = tuple(self.deserialize(closures))
-        code = types.CodeType(*tuple(self.deserialize(code[attribute] for attribute in CODE_ATTRIBUTES)))
+
+        code = types.CodeType(*tuple(self.deserialize(code[attribute]) for attribute in CODE_ATTRIBUTES))
 
         res = types.FunctionType(code=code, globals=obj_globals, closure=closures)
-        res.__globals__.update({res.__name__:res})
+        res.__globals__.update({res.__name__: res})
 
         return res
 
