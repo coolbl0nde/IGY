@@ -52,7 +52,7 @@ class JsonSerializer:
         if value[0] == "[" and value[-1] == "]":
             value = value[1:-1]
             res = regex.findall(VALUE, value)
-            return [self.find(match(0)) for match in res]
+            return [self.find(match[0]) for match in res]
 
         if value[0] == "{" and value[-1] == "}":
             value = value[1:-1]
