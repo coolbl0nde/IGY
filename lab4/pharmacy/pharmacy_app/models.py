@@ -13,6 +13,7 @@ class Medicines(models.Model):
     medicines_type = models.ForeignKey('MedicinesType', on_delete=models.SET_NULL, null=True, help_text="Choose type")
     supplier = models.ForeignKey('Supplier', on_delete=models.SET_NULL, null=True, help_text="Choose supplier")
     photo = models.ImageField(upload_to='images', blank=True)
+    purchase_count = models.PositiveIntegerField(default=0)
 
     def __str__(self):
         return self.name
