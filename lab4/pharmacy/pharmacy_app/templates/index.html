@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+
+{% block title %}
+
+<title>Main Page</title>
+
+{% endblock %}
+
+{% block content %}
+
+{% for medicine in medicines%}
+<li>    
+    <img src="{{medicine.photo.url}}">
+   <a href="{% url 'pharmacy_app:medicines_details' medicine.id %}">{{medicine.code}}, {{medicine.name}}</a>
+</li>
+
+
+{% endfor %}
+{%if user.is_authenticated%}
+
+{%endif%}
+{% endblock %}
