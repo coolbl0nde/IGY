@@ -10,7 +10,7 @@ class Medicines(models.Model):
     instruction = models.TextField(help_text="Enter instruction")
     description = models.TextField(help_text="Enter description")
     price = models.IntegerField(help_text="Enter price")
-    medicines_type = models.ForeignKey('MedicinesType', on_delete=models.SET_NULL, null=True, help_text="Choose carcass type")
+    medicines_type = models.ForeignKey('MedicinesType', on_delete=models.SET_NULL, null=True, help_text="Choose type")
     supplier = models.ForeignKey('Supplier', on_delete=models.SET_NULL, null=True, help_text="Choose supplier")
     photo = models.ImageField(upload_to='images', blank=True)
 

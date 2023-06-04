@@ -4,12 +4,12 @@ from .models import Medicines, MedicinesType, Supplier, Client
 # Register your models here.
 
 @admin.register(Medicines)
-class CarAdmin(admin.ModelAdmin):
+class MedicinesAdmin(admin.ModelAdmin):
     list_display = ['code', 'name', 'description', 'price', 'instruction', 'medicines_type', 'supplier']
     list_filter = ['name', 'price', 'medicines_type']
 
 @admin.register(MedicinesType)
-class CarcassTypeAdmin(admin.ModelAdmin):
+class TypeAdmin(admin.ModelAdmin):
     list_display = ['designation']
 
 @admin.register(Supplier)
