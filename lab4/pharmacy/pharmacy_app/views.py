@@ -15,8 +15,10 @@ import requests
 
 def index(request):
     medicines = Medicines.objects.all()[:3]
+    dog = requests.get('https://dog.ceo/api/breeds/image/random').json()
+    cat = requests.get('https://catfact.ninja/fact').json()
     return render(request, 'index.html',
-                  context={'medicines': medicines})
+                  context={'medicines': medicines, 'cat': cat['fact'], 'dog': dog['message']})
 
 
 def MedicinesList(request, type=None):
