@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+
+{% block title %}
+
+<title>Medicines Details Page</title>
+
+{% endblock %}
+
+{% block content %}
+{%if request.user.is_staff%}
+
+<div>
+    <a href="edit/{{medicines.id}}/">Edit medicine</a>
+    <a href="delete/{{medicines.id}}">Delete medicine</a>
+
+</div>
+{%endif%}
+<img src="{{medicines.photo.url}}">
+<ul>
+<li>{{medicines.code}}</li>
+<li>{{medicines.name}}</li>
+<li>{{medicines.price}}</li>
+<li>{{medicines.description}}</li>
+<li>{{medicines.instruction}}</li>
+<li>{{medicines.medicines_type}}</li>
+<li>{{medicines.supplier}}</li>
+
+{%if user.is_authenticated%}
+<form action="{% url 'cart:cart_add' medicines.id %}" method="post">
+    {{ cart_medicines_form }}
+    {% csrf_token %}
+    <input type="submit" value="Add to cart">
+</form>
+{%endif%}
+
+</ul>
+{% endblock %}

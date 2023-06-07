@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+{% block title %}
+    Your shopping cart
+{% endblock %}
+{% block content %}
+    <h1>Your shopping cart</h1>
+    <table class="cart">
+        <thead>
+        <tr>
+            <th></th>
+            <th>Medicines||</th>
+            <th>Quantity||</th>
+            <th>Remove||</th>
+            <th>Unit price||</th>
+            <th>Price||</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for item in cart %}
+            {% with medicines=item.medicines %}
+                <tr>
+                    <td>
+                        <a href="{{ medicines.get_absolute_url }}">
+                            <img src="{{ medicines.photo.url }}">
+                        </a>
+                    </td>
+                    <td>{{ medicines.model }}</td>
+                    <td>{{ item.quantity }}</td>
+                    <td><a href="{% url 'cart:cart_remove' medicines.id %}">Remove</a></td>
+                    <td class="num">{{ item.cost }}</td>
+                    <td class="num">{{ item.total_price }}</td>
+                </tr>
+            {% endwith %}
+        {% endfor %}
+        <tr class="total">
+            <td><h4>Total</h4></td>
+            <td colspan="4"></td>
+            <td class="num"><h4>{{ cart.get_total_price }}</h4></td>
+        </tr>
+        </tbody>
+    </table>
+    <p class="text-right">
+        <h4><a href="{% url 'pharmacy_app:medicines' %}" class="button light">Continue shopping</a>
+            <a href="{% url 'order:order_create' %}">Checkout</a></h4>
+    </p>
+{% endblock %}

@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+    <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+<head>
+   {% block title %}{%endblock%}
+</head>
+<body>
+
+<div>
+  <ul>
+    <li><a href="{% url 'pharmacy_app:index' %}">Home</a></li>
+    <li><a href="{% url 'pharmacy_app:medicines' %}">All Medicines</a></li>
+</ul>
+</div>
+
+
+<div id="subheader">
+  <div class="cart">
+      {%if user.is_authenticated%}
+      {% with total_items=cart|length %}
+          {% if cart|length > 0 %}
+              Your cart:
+              <a href="{% url 'cart:cart_detail' %}">
+                  {{ total_items }} item{{ total_items|pluralize }},
+                  ${{ cart.get_total_price }}
+              </a>
+          {% else %}
+              Your cart is empty.
+          {% endif %}
+      {% endwith %}
+      {%endif%}
+      {% if user.is_authenticated %}
+              |{{ user.username }}|
+              <a href="{% url 'pharmacy_app:logout' %}">Out</a>
+              {% else %}
+              <a href="{% url 'pharmacy_app:login' %}">Sign up</a>
+              <a href="{% url 'pharmacy_app:register' %}">Sign in</a>
+              {% endif %}
+  </div>
+</div>
+
+{%if request.user.is_staff%}
+
+<div><a href="{% url 'pharmacy_app:create'%}">add new medicine</a></div>
+{%endif%}
+
+    {%block content%}
+    
+    {%endblock%}
+</body>
+</html>
